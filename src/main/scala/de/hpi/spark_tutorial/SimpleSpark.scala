@@ -29,6 +29,20 @@ object SimpleSpark extends App {
 
   override def main(args: Array[String]): Unit = {
 
+
+    if (args.length != 0 && args.length != 4) {
+      print("Usage: java -jar <FILE> [--path <PATH> --cores <COUNT>]")
+      return
+    }
+
+    var path = "./TPCH"
+    var cores = 4
+    if (args.length == 4) {
+      path = args(1)
+      cores = args(3).toInt
+    }
+
+
     // Turn off logging
     Logger.getLogger("org").setLevel(Level.OFF)
     Logger.getLogger("akka").setLevel(Level.OFF)
@@ -54,9 +68,8 @@ object SimpleSpark extends App {
     //------------------------------------------------------------------------------------------------------------------
 
     val inputs = List("region", "nation", "supplier", "customer", "part", "lineitem", "orders")
-      .map(name => s"TPCH/tpch_$name.csv")
+      .map(name => s"$path/tpch_$name.csv")
 
-    val in = List("region", "nation").map(name => s"TPCH/tpch_$name.csv")
-    time { Sindy.discoverINDs(in, spark) }
+    time { Sindy.discoverINDs(inputs, spark, cores) }
   }
 }
